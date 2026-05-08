@@ -1,0 +1,5 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bounce.wav","C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bin/DesktopGL/Content/bounce.xnb","SoundEffectProcessor","SoundEffectContent",245944,163577,2.8245788
+"C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/File.spritefont","C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bin/DesktopGL/Content/GameFont.xnb","FontDescriptionProcessor","SpriteFontContent",2068,21530,0.15585
+"C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/hole.wav","C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bin/DesktopGL/Content/hole.xnb","SoundEffectProcessor","SoundEffectContent",321958,213393,0.5172442
+"C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/swing.wav","C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bin/DesktopGL/Content/swing.xnb","SoundEffectProcessor","SoundEffectContent",26960,17169,0.4257331

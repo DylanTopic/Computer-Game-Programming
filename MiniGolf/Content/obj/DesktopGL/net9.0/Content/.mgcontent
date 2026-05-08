@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bounce.wav</File>
+    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/File.spritefont</File>
+    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/hole.wav</File>
+    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/swing.wav</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File>GameFont.spritefont</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
