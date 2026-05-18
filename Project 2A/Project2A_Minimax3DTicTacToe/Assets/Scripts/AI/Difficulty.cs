@@ -27,9 +27,9 @@ public static class DifficultyExtensions
 
     public static float BlunderChance(this Difficulty d) => d switch
     {
-        Difficulty.Easy => 0.75f,   // mostly random
-        Difficulty.Casual => 0.35f,   // frequent blunders
-        Difficulty.Medium => 0.10f,   // occasional slip
+        Difficulty.Easy => 0.50f,   // mostly random
+        Difficulty.Casual => 0.25f,   // frequent blunders
+        Difficulty.Medium => 0.05f,   // occasional slip
         Difficulty.Hard => 0.00f,
         Difficulty.Expert => 0.00f,
         _ => 0f

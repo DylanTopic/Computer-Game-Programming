@@ -7,26 +7,23 @@ public static class WinLineGenerator
     {
         List<WinLine> lines = new List<WinLine>();
 
-        // === Axis-aligned lines (48 total) ===
-
-        // Along X axis: for each (y, z), the 4 cells (0..size-1, y, z)
+        // Along X axis
         for (int y = 0; y < size; y++)
             for (int z = 0; z < size; z++)
                 lines.Add(MakeLine(size, i => new Vector3Int(i, y, z)));
 
-        // Along Y axis: for each (x, z), the 4 cells (x, 0..size-1, z)
+        // Along Y axis
         for (int x = 0; x < size; x++)
             for (int z = 0; z < size; z++)
                 lines.Add(MakeLine(size, i => new Vector3Int(x, i, z)));
 
-        // Along Z axis: for each (x, y), the 4 cells (x, y, 0..size-1)
+        // Along Z axis
         for (int x = 0; x < size; x++)
             for (int y = 0; y < size; y++)
                 lines.Add(MakeLine(size, i => new Vector3Int(x, y, i)));
 
-        // === 2D-face diagonals (24 total) ===
 
-        // Diagonals on xy-plane (z fixed): each of 4 z-slices has 2 diagonals = 8
+        // Diagonals on xy-plane (z fixed)
         for (int z = 0; z < size; z++)
         {
             lines.Add(MakeLine(size, i => new Vector3Int(i, i, z)));
@@ -47,7 +44,6 @@ public static class WinLineGenerator
             lines.Add(MakeLine(size, i => new Vector3Int(x, i, size - 1 - i)));
         }
 
-        // === Space (3D) diagonals through the cube (4 total) ===
         lines.Add(MakeLine(size, i => new Vector3Int(i, i, i)));
         lines.Add(MakeLine(size, i => new Vector3Int(i, i, size - 1 - i)));
         lines.Add(MakeLine(size, i => new Vector3Int(i, size - 1 - i, i)));

@@ -300,11 +300,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Dylan\\Downloads\\monogame\\MiniGolf\\MiniGolf.csproj",
+      "projectUniqueName": "C:\\Users\\Dylan\\Downloads\\monogame\\Class work\\Project 1A\\MiniGolf\\MiniGolf.csproj",
       "projectName": "MiniGolf",
-      "projectPath": "C:\\Users\\Dylan\\Downloads\\monogame\\MiniGolf\\MiniGolf.csproj",
+      "projectPath": "C:\\Users\\Dylan\\Downloads\\monogame\\Class work\\Project 1A\\MiniGolf\\MiniGolf.csproj",
       "packagesPath": "C:\\Users\\Dylan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Dylan\\Downloads\\monogame\\MiniGolf\\obj\\",
+      "outputPath": "C:\\Users\\Dylan\\Downloads\\monogame\\Class work\\Project 1A\\MiniGolf\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Dylan\\AppData\\Roaming\\NuGet\\NuGet.Config"

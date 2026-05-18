@@ -38,7 +38,6 @@ public class BoardBuilder : MonoBehaviour
                     GameObject cellObj = Instantiate(cellPrefab, position, Quaternion.identity, transform);
                     cellObj.name = $"Cell_{x}_{y}_{z}";
 
-                    // NEW: assign coordinates on the Cell component
                     Cell cellComponent = cellObj.GetComponent<Cell>();
                     if (cellComponent != null)
                     {

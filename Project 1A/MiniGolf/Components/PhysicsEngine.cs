@@ -54,7 +54,7 @@ namespace MiniGolf.Components
             Obstacles.Add(new Rectangle(400, 280, 40, 40));
 
             // Slope
-            Slopes.Add((new Rectangle(420, 220, 30, 60), new Vector2(0, 0.2f)));
+            Slopes.Add((new Rectangle(420, 220, 60, 40), new Vector2(0, 0.2f)));
 
             // Hole
             HolePosition = new Vector2(380, 220);

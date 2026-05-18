@@ -18,7 +18,7 @@ namespace SpaceRace.Rendering
         public Matrix View => Matrix.CreateLookAt(Position, Target, Up);
         public Matrix Projection => Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlane, FarPlane);
 
-        // ---- Chase camera configuration ----
+        // Chase camera configuration
         public float ChaseDistance { get; set; } = 10f;   // how far behind the ship
         public float ChaseHeight   { get; set; } = 3f;    // how far above the ship
         public float LookAhead     { get; set; } = 5f;    // look-at point this far in front of the ship
@@ -26,10 +26,7 @@ namespace SpaceRace.Rendering
         public float TargetSmoothing   { get; set; } = 10f; // higher = snappier
         public float UpSmoothing       { get; set; } = 5f;
 
-        /// <summary>
-        /// Snap camera into a sensible starting position relative to the ship.
-        /// Call once after the ship is created, before the first Update.
-        /// </summary>
+  
         public void SnapTo(Ship ship)
         {
             Position = ship.Position - ship.Forward * ChaseDistance + ship.Up * ChaseHeight;
@@ -37,9 +34,8 @@ namespace SpaceRace.Rendering
             Up       = ship.Up;
         }
 
-        /// <summary>
-        /// Each frame: ease toward the desired chase pose. dt-aware so it feels the same at any frame rate.
-        /// </summary>
+
+        // Each frame ease toward the desired chase pose
         public void UpdateChase(Ship ship, float dt)
         {
             Vector3 desiredPos    = ship.Position - ship.Forward * ChaseDistance + ship.Up * ChaseHeight;

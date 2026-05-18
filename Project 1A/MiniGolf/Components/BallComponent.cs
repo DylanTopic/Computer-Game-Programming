@@ -13,7 +13,7 @@ namespace MiniGolf.Components
         public bool IsMoving = false;
         public Vector2 Velocity = Vector2.Zero;
 
-        // Starting position — place it on the tee
+        // Starting position
         private Vector2 _startPosition = new Vector2(160, 362);
 
         public BallComponent(Game game) : base(game)

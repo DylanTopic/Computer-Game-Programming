@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qLqvUYwhuqA=",
+  "dgSpecHash": "sCYjHGrEYX0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Dylan\\Downloads\\monogame\\MiniGolf\\MiniGolf.csproj",
+  "projectFilePath": "C:\\Users\\Dylan\\Downloads\\monogame\\Class work\\Project 1A\\MiniGolf\\MiniGolf.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Dylan\\.nuget\\packages\\monogame.content.builder.task\\3.8.4.1\\monogame.content.builder.task.3.8.4.1.nupkg.sha512",
     "C:\\Users\\Dylan\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.4.1\\monogame.framework.desktopgl.3.8.4.1.nupkg.sha512",

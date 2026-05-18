@@ -19,7 +19,7 @@ namespace SpaceRace.Physics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
         {
-            // Allow contacts only when at least one body is dynamic.
+            // Allow contacts only when at least one body is dynamic
             return a.Mobility == CollidableMobility.Dynamic && b.Mobility == CollidableMobility.Dynamic;
         }
 

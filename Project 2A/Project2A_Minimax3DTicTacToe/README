@@ -1,0 +1,151 @@
+# 3D Tic-Tac-Toe - ComS 4370 Project 2A
+# Author - Dylan Topic - Dylan004@iastate.edu
+3D Tic-Tac-Toe made with Unity for ComS 4370. The board is a 4x4x4 cube and 
+you play against an AI that uses Minimax with alpha-beta pruning. Five 
+difficulty levels.
+
+---
+
+## How to run
+
+Open the project in Unity (Unity 6 or 2022.3 LTS or newer), open the scene 
+at Assets/Scenes/MainScene.unity (or SampleScene.unity), and press Play. The 
+game starts at Medium difficulty.
+
+---
+
+## Controls
+
+- Left click - place your piece on a cell
+- Right click + drag - orbit the camera around the board
+- Scroll wheel - zoom in/out
+- R - reset the camera view
+- Difficulty buttons (top of screen) - switch difficulty, also starts a new game
+- New Game button - restart at current difficulty
+
+---
+
+## How to play
+
+You are X, the AI is O. Click any empty cell to place your piece. To win 
+you need 4 in a row along any line through the cube. That includes regular 
+rows and columns, vertical pillars, diagonals across each layer, diagonals 
+on the vertical faces, and the 3D diagonals that go corner to corner 
+through the middle of the cube. There are 76 winning lines total.
+
+The status text at the top shows whose turn it is and the current 
+difficulty. The AI thinks for a moment then plays automatically.
+
+---
+
+## Project structure
+
+    Project2A_Minimax3DTicTacToe/
+     Assets/
+       Scripts/
+         Board/
+           BoardBuilder.cs       - spawns the 64 cell GameObjects from a prefab
+           BoardState.cs         - pure data game state, [x,y,z] grid of Player values
+           Cell.cs               - component on each cube storing its coordinates
+           WinLine.cs            - struct for a single 4-cell winning line
+           WinLineGenerator.cs   - generates all 76 winning lines programmatically
+         AI/
+           Minimax.cs            - minimax + alpha-beta pruning + heuristic
+           Difficulty.cs         - enum mapping levels to depth and blunder chance
+         Game/
+           GameManager.cs        - bridges logical state and visuals, handles turns
+           InputHandler.cs       - raycasts mouse clicks to select cells
+           UIController.cs       - wires UI buttons and status text to GameManager
+           OrbitCamera.cs        - right-click orbit camera controls
+           Player.cs             - Player and ControllerType enums
+       Prefabs/
+         Cell.prefab             - the cube prefab used for every cell
+       Materials/
+         Mat_Empty.mat           - translucent gray, empty cells
+         Mat_PlayerX.mat         - blue, X pieces
+         Mat_PlayerO.mat         - red, O pieces
+       Scenes/
+         MainScene.unity         - the only scene
+
+---
+
+## The board
+
+The board is 4 layers of 4x4 grids stacked vertically. Each cell is a Unity 
+cube. Empty cells use a translucent gray material so you can see through 
+them to the layers behind. When you place a piece the cube turns blue (X) 
+or red (O).
+
+The board is built at runtime by BoardBuilder. It instantiates 64 copies of 
+the cell prefab, centers them around the origin, and stores them in a 3D 
+array so GameManager can look them up by coordinates.
+
+---
+
+## Algorithm
+
+I wrote Minimax and alpha-beta pruning from scratch, no asset packages. 
+Here is what it does:
+
+- recursively explores possible moves up to a depth limit
+- alternates between maximizing (AI) and minimizing (opponent) layers
+- alpha-beta pruning cuts off branches that cant affect the final decision
+- move ordering tries center cells first since they show up in more winning 
+  lines, which makes pruning kick in earlier
+- at the depth limit it falls back to a heuristic evaluation function
+
+The heuristic scores positions by looking at all 76 winning lines and 
+adding up points based on how many AI pieces vs opponent pieces each line 
+has. Lines with both players are dead so they get skipped. A 3-in-a-row 
+with an empty cell is weighted way higher than a 2-in-a-row because thats 
+an actual threat. Opponent line scores are slightly higher than AI scores 
+at the same count which gives the AI a defensive bias.
+
+There is also a small cell richness bonus for occupying cells that 
+participate in more winning lines (interior cells are worth more than 
+corners). Its just a tiebreaker.
+
+---
+
+## Difficulty levels
+
+There are 5 levels mapped to Minimax search depth:
+
+- Easy - depth 1, 50% chance to play a random move
+- Casual - depth 2, 25% chance to play a random move
+- Medium - depth 3, 5% chance to play a random move
+- Hard - depth 4, no random moves
+- Expert - depth 5, no random moves
+
+I needed the random move chance at lower levels because the heuristic is 
+strong enough that even depth 1 plays reasonably well if it always picks 
+the best move. Adding blunders at low difficulties gives a smoother 
+difficulty curve. Hard and Expert are pure Minimax with no randomness.
+
+---
+
+A few things I added that werent strictly required:
+
+- Camera orbit controls so you can spin around the board and zoom in/out, 
+  which makes the 3D layout much easier to read than a fixed camera
+- The blunder chance system on lower difficulties for a smoother curve 
+  instead of pure depth-based difficulty
+- Move ordering for alpha-beta which makes Expert depth 5 actually feasible 
+  to search through in reasonable time
+- AI vs AI mode (set both player controllers to AI in the inspector) which 
+  was useful for testing
+
+---
+
+## Notes
+
+- the new Input System package is used, so Active Input Handling in Player 
+  Settings needs to be on "Input System Package (New)" or "Both" with the 
+  native input backends enabled
+- Expert difficulty opening moves take a few seconds since depth 5 has a 
+  lot to search, this is normal and gets faster as the board fills up
+- RestartGame calls StopAllCoroutines first so the AI doesnt drop a piece 
+  on a freshly reset board if you restart mid-move
+- there is no multi-game scoring or progression, just one game at a time
+
+---

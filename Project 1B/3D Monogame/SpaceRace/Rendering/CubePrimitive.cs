@@ -17,8 +17,6 @@ namespace SpaceRace.Rendering
             float h = size * 0.5f;
             Color c = color ?? Color.White;
 
-            // 8 corners of the cube. We duplicate per-face later so each face can have its own normal/color shading,
-            // but for VertexPositionColor we can share these 8 just fine.
             VertexPositionColor[] vertices = new[]
             {
                 new VertexPositionColor(new Vector3(-h, -h, -h), c * 0.6f),

@@ -3,10 +3,6 @@ using Microsoft.Xna.Framework;
 
 namespace SpaceRace.Gameplay
 {
-    /// <summary>
-    /// Owns the ordered ring sequence, tracks the current target ring,
-    /// detects fly-throughs via plane-crossing math, and counts misses.
-    /// </summary>
     public class CourseManager
     {
         public IReadOnlyList<Ring> Rings => _rings;

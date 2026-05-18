@@ -4,10 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SpaceRace.Rendering
 {
-    /// <summary>
-    /// Procedural torus mesh, generated once and reusable across all rings.
-    /// Lies in the XY plane with the hole facing +Z so the ship flies through along Z.
-    /// </summary>
     public class TorusPrimitive
     {
         private readonly VertexBuffer _vertexBuffer;
@@ -30,9 +26,8 @@ namespace SpaceRace.Rendering
             var vertices = new VertexPositionColor[vertexCount];
             var indices  = new short[indexCount];
 
-            // ---- Vertices ----
-            // Sweep the "tube center" around the major circle (XY plane).
-            // At each tube-center sample, sweep a small circle around it to form the tube.
+            // Sweep around the major circle (XY plane)
+            // At each tube-center sample, sweep a small circle around it to form the tube
             for (int i = 0; i < majorSegments; i++)
             {
                 float majorAngle = MathHelper.TwoPi * i / majorSegments;
@@ -42,7 +37,7 @@ namespace SpaceRace.Rendering
                 // Tube center, lying in XY plane.
                 Vector3 tubeCenter = new Vector3(majorRadius * cosM, majorRadius * sinM, 0f);
 
-                // Local frame at that tube center: outward (radial) and +Z (axial).
+            
                 Vector3 outward = new Vector3(cosM, sinM, 0f);
                 Vector3 axial   = Vector3.UnitZ;
 
@@ -52,10 +47,10 @@ namespace SpaceRace.Rendering
                     float cosm = MathF.Cos(minorAngle);
                     float sinm = MathF.Sin(minorAngle);
 
-                    // Position on the tube surface.
+                    // Position on the tube surface
                     Vector3 pos = tubeCenter + outward * (cosm * minorRadius) + axial * (sinm * minorRadius);
 
-                    // Cheap shading: vary brightness with the minor angle so the tube reads as 3D.
+                    // Vary brightness with the minor angle so the tube reads as 3D
                     float shade = 0.6f + 0.4f * (sinm * 0.5f + 0.5f);
                     Color c = new Color(shade, shade, shade);
 
@@ -63,7 +58,7 @@ namespace SpaceRace.Rendering
                 }
             }
 
-            // ---- Indices: stitch quads between adjacent (i, j), (i+1, j), (i, j+1), (i+1, j+1) ----
+            // stitch quads between adjacent (i, j), (i+1, j), (i, j+1), (i+1, j+1) 
             int idx = 0;
             for (int i = 0; i < majorSegments; i++)
             {
@@ -96,10 +91,6 @@ namespace SpaceRace.Rendering
                 LightingEnabled = false,
             };
         }
-
-        /// <summary>
-        /// Draw with a tint. Multiplies the per-vertex shading by the tint color.
-        /// </summary>
         public void Draw(Matrix world, Matrix view, Matrix projection, Color tint)
         {
             _effect.World = world;

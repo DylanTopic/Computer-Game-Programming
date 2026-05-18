@@ -32,14 +32,15 @@ namespace SpaceRace
 
         private CourseManager _course;
 
-        private bool _previousCompleteState;
-
-        private Starfield _starfield;
+        private Skybox _skybox;
         private SpriteFont _font;
+
+        private ShipPrimitive _shipMesh;
         private SpaceRace.UI.Hud _hud;
         private KeyboardState _previousKb;
         private const float FixedDt = 1f / 60f;
         private float _physicsAccumulator;
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this)
@@ -53,7 +54,7 @@ namespace SpaceRace
 
         protected override void Initialize()
         {
-            // ---- Bepu setup ----
+            // Bepu setup
             _bufferPool = new BufferPool();
             int cores = System.Environment.ProcessorCount;
             int targetThreadCount = System.Math.Max(1, cores > 4 ? cores - 2 : cores - 1);
@@ -64,11 +65,11 @@ namespace SpaceRace
                 new NarrowPhaseCallbacks { ContactSpringiness = new SpringSettings(30, 1) },
                 new PoseIntegratorCallbacks(
                     gravity: new NumericsVector3(0, 0, 0),
-                    linearDamping: 0.05f,   
+                    linearDamping: 0.5f,   
                       angularDamping: 0.6f),
                 new SolveDescription(velocityIterationCount: 8, substepCount: 1));
 
-            // ---- Camera (static for this step) ----
+            // Camera
             _camera = new Camera
             {
                 Position = new Vector3(0, 8, 25),
@@ -76,7 +77,7 @@ namespace SpaceRace
                 AspectRatio = _graphics.PreferredBackBufferWidth / (float)_graphics.PreferredBackBufferHeight,
             };
 
-            // ---- Ship ----
+            // Ship 
             _ship = Ship.Create(_simulation, new NumericsVector3(0, 0, 0));
             _camera.SnapTo(_ship);
 
@@ -99,8 +100,9 @@ namespace SpaceRace
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _starfield = new Starfield(GraphicsDevice, starCount: 1500, distance: 2000f);
+            _skybox = new Skybox(GraphicsDevice, scale: 2000f, textureSize: 1024);
             _cubeMesh = new CubePrimitive(GraphicsDevice, size: 2f, color: Color.OrangeRed);
+            _shipMesh = new ShipPrimitive(GraphicsDevice);
             _ringMesh = new TorusPrimitive(GraphicsDevice, majorRadius: 10f, minorRadius: 0.6f);
             _font = Content.Load<SpriteFont>("Hud");
             _hud = new SpaceRace.UI.Hud(GraphicsDevice, _spriteBatch, _font);
@@ -113,15 +115,12 @@ namespace SpaceRace
                 kb.IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Restart on R press (edge-triggered).
+            // Restart on R
             if (kb.IsKeyDown(Keys.R) && !_previousKb.IsKeyDown(Keys.R))
                 ResetGame();
 
             float frameDt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // ---- Fixed-step physics ----
-            // Accumulate real elapsed time and discharge it in fixed-size physics ticks.
-            // Cap the accumulator to avoid the "spiral of death" if the game stalls.
             _physicsAccumulator += frameDt;
             if (_physicsAccumulator > 0.25f) _physicsAccumulator = 0.25f;
 
@@ -133,7 +132,7 @@ namespace SpaceRace
                 _physicsAccumulator -= FixedDt;
             }
 
-            // Camera smoothing uses real frame dt — it's a render-side concern, not physics.
+            // Camera smoothing 
             if (frameDt > 0f) _camera.UpdateChase(_ship, frameDt);
 
             _previousKb = kb;
@@ -141,7 +140,7 @@ namespace SpaceRace
         }
         private void ResetGame()
         {
-            // Snap the ship back to the start with zero velocity.
+            // Snap the ship back to the start with zero velocity
             var bodyRef = _simulation.Bodies[_ship.BodyHandle];
             bodyRef.Pose = new BepuPhysics.RigidPose(
                 new NumericsVector3(0, 0, 0),
@@ -157,7 +156,7 @@ namespace SpaceRace
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _starfield.Draw(_camera.Position, _camera.View, _camera.Projection);
+            _skybox.Draw(_camera.Position, _camera.View, _camera.Projection);
 
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
@@ -165,7 +164,7 @@ namespace SpaceRace
             foreach (var ring in _course.Rings)
                 ring.Draw(_ringMesh, _camera.View, _camera.Projection, gameTime);
 
-            _cubeMesh.Draw(_ship.WorldMatrix, _camera.View, _camera.Projection);
+            _shipMesh.Draw(_ship.WorldMatrix, _camera.View, _camera.Projection);
 
             _hud.Draw(_course, _ship);
 

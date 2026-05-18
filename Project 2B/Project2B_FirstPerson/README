@@ -1,0 +1,168 @@
+# Unity First Person - ComS 4370 Project 2B
+# Author - Dylan Topic - Dylan004@iastate.edu
+First person dungeon escape made with Unity 6 / URP for ComS 4370. You spawn 
+in a walled arena with two AI agents that hunt you down. To escape you have 
+to reach the exit slab, which is locked behind a 3D Tic-Tac-Toe minigame 
+using the Minimax logic from Project 2A.
+
+---
+
+## How to run
+
+Open the project in Unity 6 (6000.4.4f1 or newer). Open `Assets/Scenes/MainLevel.unity` 
+and press the Play button.
+
+If you want a standalone build, go to File > Build Profiles, add MainLevel to 
+the Scenes In Build list, and build for Windows.
+
+---
+
+## Controls
+
+- Mouse - look around
+- WASD - move
+- Left Shift (hold) - sprint
+- Space - jump
+- Left Click - select cells / press buttons in the minigame
+
+---
+
+## How to play
+
+When you start, intro text flashes telling you to dodge the enemies, solve 
+the puzzle, and escape. Walk around the arena and avoid the two AI agents. 
+If they spot you they will chase you and deal aura damage when they get 
+close. Your HP is shown in the top left.
+
+To escape, find the cyan slab at the north end of the arena and walk into 
+it. This pauses the world and opens the 3D Tic-Tac-Toe minigame. Pick a 
+difficulty (Easy, Medium, or Hard) and beat the AI. The Minimax search depth 
+scales with the difficulty. If you win, the slab turns green - walk back 
+through it to complete the level. If you lose, the world resumes and the 
+enemies are still hunting you, so heal up and try again.
+
+If your HP hits 0, you die and get a Restart prompt.
+
+---
+
+## Project structure
+
+    Project2B_FirstPerson/
+     Assets/
+       Scenes/
+         MainLevel.unity         - the only scene, has the arena, player, AI, exit
+       Scripts/
+         Player/
+           PlayerMovement.cs     - WASD, mouse look, sprint, jump
+           PlayerHealth.cs       - HP, take damage, die, events for HUD/death
+           HUD.cs                - reads PlayerHealth and updates the HP text
+           DeathScreen.cs        - shows YOU DIED overlay and reloads the scene
+           WinScreen.cs          - shows LEVEL COMPLETE when player walks through unlocked exit
+           IntroText.cs          - shaky intro flash at scene start
+         AI/
+           EnemyAI.cs            - finite state machine, search/chase/aura damage
+           Billboard.cs          - makes the floating name labels always face the camera
+         Minigame/
+           MinigameManager.cs    - opens/closes the minigame, pauses the world, picks difficulty
+           ExitLock.cs           - trigger on the cyan slab, recolors it green when beaten
+           TicTacToeBoardUI.cs   - builds the 4x4x4 board UI, handles clicks and AI turns
+           Minimax.cs            - ported from Project 2A, alpha-beta with move ordering
+           BoardState.cs         - ported from Project 2A, the 4x4x4 board model
+           WinLineGenerator.cs   - ported from Project 2A, generates all 76 winning lines
+           WinLine.cs            - ported from Project 2A, struct for a win line
+           Player.cs             - ported from Project 2A, X/O/None enum
+       Materials/                - URP materials for the player, enemies, exit slab
+       Prefabs/                  - enemy prefab
+     Packages/                   - AI Navigation, Input System, TMP
+
+---
+
+## The arena
+
+The play area is a walled unit zone with:
+
+- four outer walls so you cant leave the arena
+- multiple interior obstacle blocks for cover and pathing
+- a tilted hill block for terrain variation
+- a baked NavMesh covering the walkable ground (the AI uses this to path around obstacles)
+- a cyan slab at the north end - this is the exit lock
+
+---
+
+## The AI agents
+
+There are two types of enemies, each running the same EnemyAI finite state machine 
+with three states (Search, Chase, Attack) but configured with completely 
+different stats to feel like distinct characters.
+
+- BRUTE - deep red, larger scale, slow speed (2.5), short sight (5), wide 
+  field of view (140), big aura range (4), heavy damage (12 per tick)
+- STALKER - pale cyan, thinner scale, fast speed (5.5), long sight (10), 
+  narrow field of view (75), small aura range (2), light damage (4 per tick 
+  but ticks every 0.5s)
+
+Both have a NavMeshAgent, a CapsuleCollider so the player physically bumps 
+off them, and a floating world-space name label that always faces the 
+camera. Each agent uses random NavMesh point sampling to wander while 
+searching, switches to chase when it sees the player (distance + FOV cone + 
+raycast line of sight check), and switches to attack inside aura range 
+where it ticks damage continuously.
+
+---
+
+## The exit lock minigame
+
+The cyan slab at the north wall has a Box Collider trigger. When the player 
+walks into it the world pauses (Time.timeScale = 0) and a difficulty panel 
+appears with Easy, Medium, and Hard buttons. After picking one, a 4x4x4 
+Tic-Tac-Toe board is built procedurally on the UI canvas as four stacked 
+4x4 grids of buttons.
+
+The AI uses the Minimax logic from Project 2A with alpha-beta pruning. The 
+three difficulty levels are:
+
+- Easy - search depth 1 with 70% chance of playing a random move (lets the 
+  player win most of the time)
+- Medium - search depth 3 with 15% blunder chance
+- Hard - search depth 5 with 0% blunder chance (close to optimal play, ~3s 
+  per move on an empty board)
+
+When the player wins the Tic-Tac-Toe game, the slab turns green and the 
+lock is unlocked. Walking back through the green slab triggers the LEVEL 
+COMPLETE overlay.
+
+When the player loses the Tic-Tac-Toe game they will lose 50 hp instantly.
+
+---
+
+## State machines and events
+
+The EnemyAI FSM transitions between Search, Chase, and Attack based on a 
+sight check that combines:
+
+- distance to player vs sight range
+- angle between agent forward and player direction vs field of view
+- a raycast from eye height to make sure no wall blocks the view
+
+The minigame uses C# Action callbacks to pass results back. When ExitLock 
+opens the minigame it passes a callback that receives the win/loss result, 
+and the same pattern is used between MinigameManager and TicTacToeBoardUI.
+
+PlayerHealth fires `OnHealthChanged` and `OnDied` events that the HUD and 
+DeathScreen subscribe to. ExitLock fires `OnExitReached` when the player 
+walks through after unlocking, which WinScreen subscribes to.
+
+---
+
+## Notes
+
+- only one scene, no level progression
+- Restart and Play Again both reload MainLevel via SceneManager
+- the Minimax port from Project 2A is unchanged - the same `Minimax.cs`, 
+  `BoardState.cs`, `WinLineGenerator.cs`, `WinLine.cs`, and `Player.cs` 
+  files are dropped in
+- the Tic-Tac-Toe board is built procedurally at runtime instead of being 
+  set up in the editor, so all 64 cells exist as Unity Button components 
+  with their own click listeners
+- emission color changes on the exit slab go through `material.SetColor` 
+  with HasProperty checks so the same code works on URP and Built-in

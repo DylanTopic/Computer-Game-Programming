@@ -1,0 +1,99 @@
+# MiniGolf - ComS 4370 Project 1A
+# Author - Dylan Topic - Dylan004@iastate.edu
+Mini golf game made with MonoGame for ComS 4370. Top down 2D game where you 
+try to get the ball in the hole in as few shots as possible.
+
+---
+
+## How to run
+
+Make sure you have .NET 9 installed, then just run:
+
+    dotnet run
+
+---
+
+## Controls
+
+- Mouse - aim your shot
+- Left/Right arrow keys - fine tune the aim if you dont want to use the mouse
+- Up/Down arrow keys - change shot power
+- Space - shoot
+- R - reset
+
+---
+
+## How to play
+
+Move your mouse around the ball to aim, adjust power with up/down arrows, 
+and hit space to shoot. Try to get the ball in the blue circle. Your stroke 
+count is shown in the top left. Lower is better.
+
+---
+
+## Project structure
+
+    MiniGolf/
+     Components/
+       BallComponent.cs      - the ball, handles drawing and tracks position/velocity
+       CourseComponent.cs    - draws everything on the course (walls, hole, slope, etc)
+       HUDComponent.cs       - draws the power bar, aim arrow, and stroke counter
+       InputComponent.cs     - keyboard and mouse input
+       PhysicsEngine.cs      - all the physics stuff (movement, collisions, slopes)
+       SoundManager.cs       - handles sound effects
+     Content/
+       swing.wav             - plays when you hit the ball
+       bounce.wav            - plays when ball hits a wall
+       hole.wav              - plays when ball goes in the hole
+       GameFont.spritefont   - font for the HUD
+     Game1.cs                  - sets up and registers all the components
+     Program.cs                - entry point
+
+---
+
+## The course
+
+The course is an L-shaped hole. It has:
+
+- outer walls that keep the ball in bounds
+- inner walls that create corners and banks
+- a blue rectangle at the bottom left thats the tee (starting position)
+- a red slope region that pushes the ball downward when the ball rolls through it
+- a dark gray obstacle block in the way
+- a diagonal wall in the corner that bounces the ball at an angle
+- a blue circle thats the hole
+
+---
+
+## Physics
+
+I wrote a custom 2D physics engine for this. Here is what it does:
+
+- gives the ball a velocity when you shoot based on angle and power
+- applies friction every frame so the ball slows down and stops
+- splits movement into 5 substeps per frame so the ball doesnt clip through walls
+- handles rectangle collisions with all the walls and obstacles
+- handles the diagonal wall using line segment vs circle math
+- applies a force to the ball when it passes over the slope region
+- detects when the ball is close enough to the hole to sink it
+
+---
+
+## Extra credit
+
+I added the slope arrow grid feature. The red slope area is divided into a 
+grid of small squares and each one has an arrow showing which direction the 
+ball will get pushed. The arrows point in the direction of the slope force 
+vector from the physics engine.
+
+---
+
+## Notes
+
+- only one hole, no multiple hole progression
+- R resets the ball back to the tee and resets the stroke count
+- the diagonal wall collision uses a different collision method than the 
+  regular walls since normal rectangle collision doesnt work for angles
+
+---
+

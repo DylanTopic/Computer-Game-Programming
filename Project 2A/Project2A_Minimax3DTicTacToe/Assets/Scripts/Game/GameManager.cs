@@ -75,15 +75,15 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Public method for the UI to set difficulty mid-session. Doesn't restart on its own.
+    // Public method for the UI to set difficulty mid-session
     public void SetDifficulty(Difficulty d)
     {
         difficulty = d;
         Debug.Log($"Difficulty set to {d.ToDisplayName()} (depth {d.ToDepth()})");
     }
 
-    // Attempt to place a piece for the current player at the given coordinates.
-    // Returns true if the move was legal and applied; false otherwise.
+    // Attempt to place a piece for the current player at the given coordinates
+    // Returns true if the move was legal and applied; false otherwise
     public bool TryPlacePiece(int x, int y, int z)
     {
         if (gameOver)
@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Picks a move for the AI. 
+    // Picks a move for the AI
     private Vector3Int? ChooseAIMove()
     {
         float blunderChance = difficulty.BlunderChance();

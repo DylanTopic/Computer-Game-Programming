@@ -4,10 +4,10 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/bounce.wav</File>
-    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/File.spritefont</File>
-    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/hole.wav</File>
-    <File>C:/Users/Dylan/Downloads/monogame/MiniGolf/Content/swing.wav</File>
+    <File>C:/Users/Dylan/Downloads/monogame/Class work/Project 1A/MiniGolf/Content/bounce.wav</File>
+    <File>C:/Users/Dylan/Downloads/monogame/Class work/Project 1A/MiniGolf/Content/File.spritefont</File>
+    <File>C:/Users/Dylan/Downloads/monogame/Class work/Project 1A/MiniGolf/Content/hole.wav</File>
+    <File>C:/Users/Dylan/Downloads/monogame/Class work/Project 1A/MiniGolf/Content/swing.wav</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

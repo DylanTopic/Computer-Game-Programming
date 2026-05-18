@@ -1,0 +1,140 @@
+# Space Race - ComS 4370 Project 1B
+# Author - Dylan Topic - Dylan004@iastate.edu
+3D space racing game made with MonoGame and the Bepu Physics V2 engine for 
+ComS 4370. Fly a ship through a sequence of rings as fast as you can with 
+as few misses as possible.
+
+---
+
+## How to run
+
+Make sure you have .NET 8 (or newer) installed, then just run:
+
+    dotnet run
+
+---
+
+## Controls
+
+- W/S - pitch nose down/up
+- A/D - yaw left/right  
+- Q/E - roll left/right
+- Left Shift - thrust forward
+- Left Ctrl - reverse thrust
+- R - restart the run
+- Escape - exit
+
+---
+
+## How to play
+
+Fly through the cyan-highlighted ring. After you pass it (or miss it), the 
+next ring lights up. Get through all 7 rings as fast as you can while 
+missing as few as possible. The HUD shows your current time, speed, ring 
+count, and pass/miss totals. When you finish the course the clock freezes 
+and a final score is shown.
+
+---
+
+## Project structure
+
+    SpaceRace/
+     Content/
+       Hud.spritefont        - font description for the HUD
+       Content.mgcb          - content pipeline build file
+     Physics/
+       NarrowPhaseCallbacks.cs   - Bepu callback for collision filtering
+       PoseIntegratorCallbacks.cs - Bepu callback for gravity and damping
+       PhysicsObject.cs          - bridges a Bepu body to a MonoGame transform
+     Rendering/
+       Camera.cs             - chase camera with frame rate independent smoothing
+       ShipPrimitive.cs      - procedural ship mesh (fuselage, nose, wings, fin)
+       TorusPrimitive.cs     - procedural torus mesh used for rings
+       Skybox.cs             - 6-face procedural starfield skybox
+     Gameplay/
+       Ship.cs               - ship class, applies forces from keyboard input
+       Ring.cs               - one ring with its Bepu static body and visual state
+       CourseManager.cs      - ring sequence, pass/miss detection, clock
+     UI/
+       Hud.cs                - HUD rendering and score formula
+     Game1.cs                  - main game loop with fixed step physics
+     Program.cs                - entry point
+
+---
+
+## The course
+
+The course has 7 rings placed along a path in -Z with varying offsets and 
+orientations. Some rings are tilted left/right, some pitched up/down, and 
+one is rolled diagonally. Each ring is:
+
+- a procedural torus mesh (major radius 10, minor radius 0.6)
+- a Bepu static body (infinite mass, cant be pushed)
+- soft white when not yet reached
+- pulsing cyan when its the next target
+- dim gray after you pass or miss it
+
+The skybox is a unit cube wrapped around the camera with 6 procedurally 
+generated starfield textures, drawn first each frame with depth writes off 
+so world geometry overdraws naturally. The cube follows the camera so stars 
+appear infinitely far.
+
+---
+
+## Physics
+
+All ship motion goes through the Bepu V2 physics engine. The simulation 
+runs at a fixed 60 Hz with an accumulator so behavior is the same on any 
+monitor refresh rate. Here is what the physics layer does:
+
+- zero gravity (its space)
+- mild linear and angular damping so motion still bleeds off over time
+- keyboard input is converted to forces and torques in the ships local 
+  frame (forward is -Z), then applied as impulses each fixed step
+- auto stabilizer applies a counter-torque on any rotation axis that isnt 
+  receiving input, so the ship settles when you let go of the keys (this 
+  is a standard steering behavior, still forces only)
+- rings are registered with Bepu as static bodies so they have infinite 
+  mass per the assignment
+- a narrow phase callback filters out static-vs-dynamic contacts so the 
+  ship doesnt physically bump the ring colliders
+- pass/miss detection is analytic: each frame the ships previous and 
+  current positions are checked against the target rings plane, and if 
+  they straddle it the crossing point is interpolated and checked against 
+  the ring radius
+
+---
+
+## HUD and scoring
+
+The HUD shows:
+
+- time elapsed (freezes on course complete)
+- current speed in m/s
+- ring count (0/7 through 7/7)
+- passed and missed totals (color shifts to salmon if any misses)
+- final score overlay when the course is complete
+
+The score formula is:
+
+    score = max(0, 10000 - (time * 10) - (missed * 500))
+    if missed == 0 then score += 1000  (clean run bonus)
+
+Each missed ring costs roughly 50 seconds of equivalent time, so accuracy 
+matters more than raw speed. A perfect ~60 second run scores around 10400.
+
+---
+
+## Notes
+
+- The ship has a 2x1x3 box collider registered with Bepu, but the narrow phase callback 
+  filters out all static-vs-dynamic contacts, so in practice the ship doesnt physically 
+  collide with anything. Pass/miss is detected analytically by the CourseManager. 
+  The collision box is essentially reserved for future obstacles
+- The rings static bodies have a tiny sphere shape just to satisfy "ring is 
+  a Bepu body with infinite mass." Actual pass/miss is detected by the 
+  CourseManager not by Bepu collisions
+- The starfield textures use a fixed RNG seed so the skybox looks the same 
+  every run
+
+---

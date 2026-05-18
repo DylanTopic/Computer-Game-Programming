@@ -13,7 +13,7 @@ public class BoardState
     public BoardState()
     {
         grid = new Player[Size, Size, Size];
-        // Default value of Player enum is None (0), so grid starts empty.
+        // Default value of Player enum is None (0), so grid starts empty
     }
 
     public BoardState(BoardState other)
@@ -82,7 +82,7 @@ public class BoardState
         return Player.None;
     }
 
-    // Returns true if the board is full (every cell occupied).
+    // Returns true if the board is full 
     public bool IsFull()
     {
         for (int x = 0; x < Size; x++)
@@ -93,7 +93,7 @@ public class BoardState
         return true;
     }
 
-    // Useful for debugging in the Console.
+
     public override string ToString()
     {
         var sb = new System.Text.StringBuilder();
@@ -118,15 +118,15 @@ public class BoardState
         }
         return sb.ToString();
     }
-    // Returns the 76 winning lines on a 4x4x4 board. Cached internally, so cheap.
+    // Returns the 76 winning lines on a 4x4x4 board
     public static List<WinLine> GetAllLines()
     {
         return GetLines();  // reuses the existing private cached generator
     }
     private static int[,,] cachedCellRichness;
 
-    // Returns a 3D array where [x, y, z] = number of winning lines that include this cell.
-    // Cached after first call. Cells in the interior appear in more lines than corners/edges.
+    // Returns a 3D array where [x, y, z] = number of winning lines that include this cell
+    // Cached after first call. Cells in the interior appear in more lines than corners/edges
     public static int[,,] GetCellRichness()
     {
         if (cachedCellRichness != null) return cachedCellRichness;

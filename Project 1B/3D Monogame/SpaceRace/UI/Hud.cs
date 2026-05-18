@@ -7,7 +7,7 @@ namespace SpaceRace.UI
 {
     public class Hud
     {
-        // ---- Tunable scoring constants ----
+        // Scoring constants
         public int   BaseScore             { get; set; } = 10000;
         public float TimePenaltyPerSecond  { get; set; } = 10f;
         public int   MissPenalty           { get; set; } = 500;
@@ -77,7 +77,7 @@ namespace SpaceRace.UI
             int cx = _graphicsDevice.Viewport.Width  / 2;
             int cy = _graphicsDevice.Viewport.Height / 2;
 
-            // Semi-shadow effect: draw black offset, then the real color, for legibility on starfield.
+            // Semi-shadow effect: draw black offset, then the real color, for legibility on starfield
             DrawCentered(title,    cx, cy - 60, Color.Yellow);
             DrawCentered(scoreStr, cx, cy - 20, Color.White);
             DrawCentered(detailStr, cx, cy + 16, Color.LightGray);

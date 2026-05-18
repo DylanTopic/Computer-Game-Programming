@@ -8,7 +8,6 @@ namespace SpaceRace.Physics
 {
     public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
     {
-        // Space: zero gravity. We'll add per-body damping for arcade feel later.
         public Vector3 Gravity;
         public float LinearDamping;
         public float AngularDamping;

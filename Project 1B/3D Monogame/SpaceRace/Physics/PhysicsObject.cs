@@ -5,10 +5,6 @@ using NumericsQuaternion = System.Numerics.Quaternion;
 
 namespace SpaceRace.Physics
 {
-    /// <summary>
-    /// Bridges a Bepu body to MonoGame rendering. Owns a BodyHandle and
-    /// exposes the body's current world transform as a MonoGame Matrix.
-    /// </summary>
     public class PhysicsObject
     {
         public BodyHandle BodyHandle { get; }
@@ -38,10 +34,8 @@ namespace SpaceRace.Physics
             }
         }
 
-        /// <summary>
-        /// World matrix combining current orientation and position from Bepu.
-        /// Cube/ship/ring renderers all consume this.
-        /// </summary>
+        // World matrix combining current orientation and position from Bepu
+        // Cube/ship/ring renderers all consume this
         public Matrix WorldMatrix
         {
             get

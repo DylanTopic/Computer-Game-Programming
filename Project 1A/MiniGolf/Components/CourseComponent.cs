@@ -8,31 +8,29 @@ namespace MiniGolf.Components
         private SpriteBatch _spriteBatch;
         private Texture2D _pixel;
 
-        // Course elements XY Width Height
         // Outer walls
         private Rectangle _wallTop = new Rectangle(100, 100, 400, 20);
         private Rectangle _wallBottom = new Rectangle(100, 400, 400, 20);
         private Rectangle _wallLeft = new Rectangle(100, 100, 20, 300);
         private Rectangle _wallRight = new Rectangle(480, 100, 20, 300);
 
-        // Inner walls (Numbers go left to right, bottom to top)
-        private Rectangle _wallMiddle1 = new Rectangle(100, 300, 250, 10); 
-        private Rectangle _wallMiddle2 = new Rectangle(310, 180, 100, 10); 
-        private Rectangle _wallMiddle3 = new Rectangle(350, 260, 10, 50); 
-        private Rectangle _wallMiddle4 = new Rectangle(350, 250, 60, 10); 
-        private Rectangle _wallMiddle5 = new Rectangle(410, 180, 10, 80); 
+        // Inner walls
+        private Rectangle _wallMiddle1 = new Rectangle(100, 300, 250, 10);
+        private Rectangle _wallMiddle2 = new Rectangle(310, 180, 100, 10);
+        private Rectangle _wallMiddle3 = new Rectangle(350, 260, 10, 50);
+        private Rectangle _wallMiddle4 = new Rectangle(350, 250, 60, 10);
+        private Rectangle _wallMiddle5 = new Rectangle(410, 180, 10, 80);
 
         // Tee, slope, and obstacle
         private Rectangle _tee = new Rectangle(140, 370, 40, 15);
         private Rectangle _slope = new Rectangle(420, 220, 60, 40);
         private Rectangle _obstacle = new Rectangle(400, 280, 40, 40);
 
-        // Slanted wall 
-
+        // Slanted wall
         private Vector2 _slantStart = new Vector2(490, 330);
         private Vector2 _slantEnd = new Vector2(440, 410);
 
-        // Hole position (drawn as circle)
+        // Hole
         private Vector2 _holePosition = new Vector2(380, 220);
         private int _holeRadius = 15;
 
@@ -43,8 +41,6 @@ namespace MiniGolf.Components
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // Create a 1x1 white pixel texture we can recolor and stretch
             _pixel = new Texture2D(GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
         }
@@ -71,8 +67,29 @@ namespace MiniGolf.Components
             // Tee (blue)
             _spriteBatch.Draw(_pixel, _tee, Color.Blue);
 
-            // Slope (red = uphill)
-            _spriteBatch.Draw(_pixel, _slope, Color.Red);
+            // Slope divided into grid with direction arrows
+            int cellSize = 15;
+            Vector2 slopeForceDir = Vector2.Normalize(new Vector2(0, 0.2f));
+
+            for (int row = 0; row < _slope.Height / cellSize; row++)
+            {
+                for (int col = 0; col < _slope.Width / cellSize; col++)
+                {
+                    Rectangle cell = new Rectangle(
+                        _slope.X + col * cellSize,
+                        _slope.Y + row * cellSize,
+                        cellSize - 1,
+                        cellSize - 1
+                    );
+                    _spriteBatch.Draw(_pixel, cell, Color.Red);
+
+                    Vector2 cellCenter = new Vector2(
+                        cell.X + cell.Width / 2f,
+                        cell.Y + cell.Height / 2f
+                    );
+                    DrawArrow(cellCenter, slopeForceDir, Color.White);
+                }
+            }
 
             // Obstacle (dark gray)
             _spriteBatch.Draw(_pixel, _obstacle, Color.DarkGray);
@@ -81,7 +98,6 @@ namespace MiniGolf.Components
             DrawCircle(_holePosition, _holeRadius, Color.Blue);
 
             // Slanted Wall
-            
             DrawSlant(_slantStart, _slantEnd, Color.Black, 8);
 
             _spriteBatch.End();
@@ -89,7 +105,6 @@ namespace MiniGolf.Components
 
         private void DrawCircle(Vector2 center, int radius, Color color)
         {
-            // Creates a circle texture and draws it
             int diameter = radius * 2;
             Texture2D circleTexture = new Texture2D(GraphicsDevice, diameter, diameter);
             Color[] data = new Color[diameter * diameter];
@@ -100,10 +115,8 @@ namespace MiniGolf.Components
                 {
                     float dx = x - radius;
                     float dy = y - radius;
-                    if (dx * dx + dy * dy <= radius * radius)
-                        data[y * diameter + x] = color;
-                    else
-                        data[y * diameter + x] = Color.Transparent;
+                    data[y * diameter + x] = (dx * dx + dy * dy <= radius * radius)
+                        ? color : Color.Transparent;
                 }
             }
 
@@ -111,7 +124,8 @@ namespace MiniGolf.Components
             _spriteBatch.Draw(circleTexture,
                 new Vector2(center.X - radius, center.Y - radius), Color.White);
         }
-            private void DrawSlant(Vector2 start, Vector2 end, Color color, int thickness)
+
+        private void DrawSlant(Vector2 start, Vector2 end, Color color, int thickness)
         {
             Vector2 diff = end - start;
             float length = diff.Length();
@@ -121,7 +135,16 @@ namespace MiniGolf.Components
                 new Rectangle((int)start.X, (int)start.Y, (int)length, thickness),
                 null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
         }
+
+        private void DrawArrow(Vector2 center, Vector2 direction, Color color)
+        {
+            Vector2 start = center - direction * 6;
+            Vector2 end = center + direction * 6;
+            DrawSlant(start, end - new Vector2(0, 1), color, 2);
+
+            Vector2 perp = new Vector2(-direction.Y, direction.X);
+            DrawSlant(end - new Vector2(1, 0), end - direction * 4 + perp * 3 - new Vector2(3, 1), color, 2);
+            DrawSlant(end - new Vector2(2, 1), end - direction * 4 - perp * 3 - new Vector2(-2, 3), color, 2);
+        }
     }
-
-
 }

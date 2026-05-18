@@ -41,7 +41,6 @@ namespace MiniGolf.Components
 
         public override void Update(GameTime gameTime)
 {
-    // Tick cooldown down
     if (_bounceCooldown > 0)
         _bounceCooldown -= gameTime.ElapsedGameTime.TotalSeconds;
 

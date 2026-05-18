@@ -12,7 +12,7 @@ namespace SpaceRace.Gameplay
 {
     public class Ship : PhysicsObject
     {
-        // Tunable handling parameters. We'll iterate on these in Step 7.
+        // Handling parameters
         public float ThrustForce      { get; set; } = 35f;   // N along local -Z
         public float ReverseThrust    { get; set; } = 18f;   // N along local +Z
         public float PitchTorque      { get; set; } = 6f;    // N·m around local X
@@ -23,14 +23,10 @@ namespace SpaceRace.Gameplay
 
         public Ship(Simulation simulation, BodyHandle handle) : base(simulation, handle) { }
 
-        /// <summary>
-        /// Factory: creates the Bepu body for the ship and wraps it.
-        /// </summary>
         public static Ship Create(Simulation simulation, NumericsVector3 startPosition)
         {
-            // For now the ship is a 2x1x3 box (width, height, length). We'll swap for a model later.
             var shape = new Box(2f, 1f, 3f);
-            var inertia = shape.ComputeInertia(2f); // 2 kg
+            var inertia = shape.ComputeInertia(2f);
             var shapeIndex = simulation.Shapes.Add(shape);
 
             var description = BodyDescription.CreateDynamic(
@@ -43,9 +39,7 @@ namespace SpaceRace.Gameplay
             return new Ship(simulation, handle);
         }
 
-        /// <summary>
-        /// Per-frame input → physics impulses. Pure forces / torques only.
-        /// </summary>
+        // Per-frame input, physics impulses
         public void ApplyInput(KeyboardState kb, float dt)
         {
             var bodyRef = Simulation.Bodies[BodyHandle];
@@ -56,14 +50,14 @@ namespace SpaceRace.Gameplay
             var localUp      = new NumericsVector3(rotation.M21, rotation.M22, rotation.M23);
             var localForward = -new NumericsVector3(rotation.M31, rotation.M32, rotation.M33);
 
-            // ---- Linear thrust ----
+            // Linear thrust
             NumericsVector3 thrust = NumericsVector3.Zero;
             if (kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift))
                 thrust += localForward * ThrustForce;
             if (kb.IsKeyDown(Keys.LeftControl) || kb.IsKeyDown(Keys.RightControl))
                 thrust -= localForward * ReverseThrust;
 
-            // ---- Angular torques ----
+            // Angular torques
             NumericsVector3 torque = NumericsVector3.Zero;
             bool pitchInput = false, yawInput = false, rollInput = false;
 
@@ -74,12 +68,9 @@ namespace SpaceRace.Gameplay
             if (kb.IsKeyDown(Keys.Q)) { torque += localForward *  RollTorque; rollInput = true; }
             if (kb.IsKeyDown(Keys.E)) { torque += localForward * -RollTorque; rollInput = true; }
 
-            // ---- Auto-stabilization: counter-torque on axes with no input ----
-            // For each local axis the player isn't actively driving, apply a torque proportional
-            // to the current angular velocity component along that axis, in the opposite direction.
-            // This rapidly bleeds off residual spin without overshooting (it's a P-controller).
+            // Auto-stabilization: counter-torque on axes with no input
             var angVel = bodyRef.Velocity.Angular;
-            float stabilizerStrength = 4f; // tune to taste; higher = stiffer auto-level
+            float stabilizerStrength = 4f;
 
             if (!pitchInput)
             {
@@ -97,7 +88,6 @@ namespace SpaceRace.Gameplay
                 torque -= localForward * (spinAroundForward * stabilizerStrength);
             }
 
-            // ---- Apply ----
             bodyRef.Awake = true;
             if (thrust != NumericsVector3.Zero)
                 bodyRef.ApplyLinearImpulse(thrust * dt);
@@ -116,8 +106,8 @@ namespace SpaceRace.Gameplay
                 v *= maxMagnitude / len;
             }
         }
-        // World-space basis vectors derived from the ship's current orientation.
-        // Forward is -Z in local space (graphics convention).
+        // World-space basis vectors derived from the ship's current orientation
+        // Forward is -Z in local space (graphics convention)
         public Vector3 Forward
         {
             get
